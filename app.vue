@@ -5,7 +5,7 @@
 </template>
  -->
 
- <script setup lang="ts">
+<!-- <script setup lang="ts">
 const route = useRoute()
 useHead({
   htmlAttrs: {
@@ -28,13 +28,13 @@ useSeoMeta({
     return titleChunk ? titleChunk : 'Keyro'
   }
 })
-</script>
+</script> -->
 
 <template>
   <div class="min-h-screen flex flex-col justify-between overflow-hidden">
     <nuxt-page />
     <layout-footer class="relative" />
-    <cookie-monster />
+    <!-- <cookie-monster /> -->
   </div>
 </template>
 
