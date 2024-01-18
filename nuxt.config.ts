@@ -14,22 +14,6 @@ export default defineNuxtConfig({
   typescript: {
     strict: true
   },
-  vite: {
-    define: {
-      'process.env.DEBUG': 'false'
-    }
-  },
-  content: {
-    documentDriven: true,
-    markdown: {
-      mdc: true
-    },
-    watch: {
-      ws: {
-        port: 3002
-      }
-    }
-  },
   googleFonts: {
     prefetch: true,
     preconnect: true,
@@ -44,9 +28,9 @@ export default defineNuxtConfig({
       autoprefixer: {}
     }
   },
-	site: {
-		url: 'https://keyro.fr',
-	},
+	// site: {
+	// 	url: 'https://keyro.fr',
+	// },
 	// sitemap: {
 	// 	exclude: ['/mentions-legales'],
 	// },
