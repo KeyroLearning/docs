@@ -1,0 +1,166 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "The AWS CloudFormation template for this Serverless application",
+  "Resources": {
+    "ServerlessDeploymentBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "ServerlessDeploymentBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "ServerlessDeploymentBucket"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Effect": "Deny",
+              "Principal": "*",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "ServerlessDeploymentBucket"
+                      },
+                      "/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "ServerlessDeploymentBucket"
+                      }
+                    ]
+                  ]
+                }
+              ],
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": false
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "DocsCloudFrontOriginAccessIdentity": {
+      "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+      "Properties": {
+        "CloudFrontOriginAccessIdentityConfig": {
+          "Comment": "Serverless docs OA"
+        }
+      }
+    },
+    "DocsCloudFrontDistribution": {
+      "Type": "AWS::CloudFront::Distribution",
+      "Properties": {
+        "DistributionConfig": {
+          "Origins": [
+            {
+              "DomainName": "docs-prod-served-files.s3.amazonaws.com",
+              "Id": "Docs",
+              "S3OriginConfig": {
+                "OriginAccessIdentity": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "origin-access-identity/cloudfront/",
+                      {
+                        "Ref": "DocsCloudFrontOriginAccessIdentity"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Enabled": "true",
+          "Aliases": [
+            "docs.keyro.fr"
+          ],
+          "DefaultRootObject": "200.html",
+          "CustomErrorResponses": [
+            {
+              "ErrorCode": 404,
+              "ResponseCode": 200,
+              "ResponsePagePath": "/200.html"
+            },
+            {
+              "ErrorCode": 403,
+              "ResponseCode": 200,
+              "ResponsePagePath": "/200.html"
+            }
+          ],
+          "DefaultCacheBehavior": {
+            "Compress": true,
+            "AllowedMethods": [
+              "GET",
+              "HEAD",
+              "OPTIONS"
+            ],
+            "CachedMethods": [
+              "GET",
+              "HEAD",
+              "OPTIONS"
+            ],
+            "TargetOriginId": "Docs",
+            "ForwardedValues": {
+              "QueryString": "false",
+              "Cookies": {
+                "Forward": "none"
+              }
+            },
+            "ViewerProtocolPolicy": "redirect-to-https"
+          },
+          "ViewerCertificate": {
+            "AcmCertificateArn": "arn:aws:acm:us-east-1:386622880517:certificate/7590b1ab-a30b-4d04-a856-98a558f6fed5",
+            "SslSupportMethod": "sni-only"
+          }
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "ServerlessDeploymentBucketName": {
+      "Value": {
+        "Ref": "ServerlessDeploymentBucket"
+      },
+      "Export": {
+        "Name": "sls-docs-prod-ServerlessDeploymentBucketName"
+      }
+    },
+    "CloudFrontDistributionId": {
+      "Value": {
+        "Ref": "DocsCloudFrontDistribution"
+      }
+    }
+  }
+}

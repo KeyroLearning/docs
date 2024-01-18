@@ -1,0 +1,7 @@
+region: eu-west-1
+node_env: production
+service: docs
+studio_token: ed1a95745bcaa0900e75f970e62b9229fe4c42369c0b8e246990d2172b73a748
+domains:
+  - docs.keyro.fr
+certificateArn: 'arn:aws:acm:us-east-1:386622880517:certificate/7590b1ab-a30b-4d04-a856-98a558f6fed5'

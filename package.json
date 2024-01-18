@@ -10,5 +10,12 @@
   "devDependencies": {
     "@nuxt/content": "^2.10.0",
     "nuxt": "^3.9.1"
+  },
+  "dependencies": {
+    "@nuxthq/studio": "^1.0.6",
+    "serverless": "^3.38.0",
+    "serverless-cloudfront-invalidate": "^1.12.2",
+    "serverless-finch": "^4.0.3",
+    "serverless-hooks-plugin": "^1.1.0"
   }
 }

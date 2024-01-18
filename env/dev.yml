@@ -1,0 +1,6 @@
+region: eu-west-3
+node_env: developement
+service: docs
+domains:
+  - docs-dev.keyro.fr
+certificateArn: 'arn:aws:acm:us-east-1:386622880517:certificate/7590b1ab-a30b-4d04-a856-98a558f6fed5'

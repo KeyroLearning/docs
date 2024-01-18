@@ -1,0 +1,111 @@
+service: ${file(env/${self:provider.stage}.yml):service}
+
+frameworkVersion: '3'
+	
+plugins:
+  - serverless-finch
+  - serverless-hooks-plugin
+  - serverless-cloudfront-invalidate
+
+custom:
+  env: ${file(env/${self:provider.stage}.yml)}
+  client:
+    bucketName: ${self:service}-${self:provider.stage}-served-files
+    distributionFolder: .output/public/
+    indexDocument: 200.html
+    errorDocument: 200.html
+  hooks:
+    package:createDeploymentArtifacts:
+      - SLS_STAGE=${self:provider.stage} NUXT_PUBLIC_STUDIO_TOKENS=${self:custom.env.studio_token} yarn generate --stage ${self:provider.stage}    
+    before:deploy:finalize:
+      - SLS_STAGE=${self:provider.stage} yarn serverless client deploy --no-confirm --stage ${self:provider.stage} 
+  cloudfrontInvalidate:
+    - distributionIdKey: CloudFrontDistributionId #conditional, distributionId or distributionIdKey is required.
+      autoInvalidate: true # Can be set to false to avoid automatic invalidation after the deployment. Useful if you want to manually trigger the invalidation later. Defaults to true.
+      items: 
+        - '/*'
+      stage: ${opt:stage, 'dev'}
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: ${opt:stage, 'dev'}
+  region: ${self:custom.env.region}
+  profile: keyro
+
+
+## for custom domain : https://www.serverless.com/framework/docs/providers/aws/events/http-api
+
+resources:
+  Resources:
+    DocsCloudFrontOriginAccessIdentity:
+      Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity'
+      Properties:
+        CloudFrontOriginAccessIdentityConfig:
+          Comment: 'Serverless docs OA'
+    ## Specifying the CloudFront Distribution to server your Web Application
+    DocsCloudFrontDistribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          Origins:
+            - DomainName: ${self:custom.client.bucketName}.s3.amazonaws.com
+              ## An identifier for the origin which must be unique within the distribution
+              Id: Docs
+              # CustomOriginConfig:
+              #   HTTPPort: 80
+              #   HTTPSPort: 443
+              #   OriginProtocolPolicy: https-only
+              ## In case you want to restrict the bucket access use S3OriginConfig and remove CustomOriginConfig
+              S3OriginConfig:
+                OriginAccessIdentity:
+                  Fn::Join:
+                    - ''
+                    -
+                      - 'origin-access-identity/cloudfront/'
+                      - Ref: DocsCloudFrontOriginAccessIdentity
+          Enabled: 'true'
+          ## Uncomment the following section in case you are using a custom domain
+          Aliases: ${self:custom.env.domains}
+          DefaultRootObject: "200.html"
+          CustomErrorResponses:
+            - ErrorCode: 404
+              ResponseCode: 200
+              ResponsePagePath: /200.html
+            - ErrorCode: 403
+              ResponseCode: 200
+              ResponsePagePath: /200.html
+          DefaultCacheBehavior:
+            Compress: true
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            CachedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            ## The origin id defined above
+            TargetOriginId: Docs
+            ## Defining if and how the QueryString and Cookies are forwarded to the origin which in this case is S3
+            ForwardedValues:
+              QueryString: 'false'
+              Cookies:
+                Forward: none
+            ## The protocol that users can use to access the files in the origin. To allow HTTP use `allow-all`
+            ViewerProtocolPolicy: redirect-to-https
+          ## The certificate to use when viewers use HTTPS to request objects.
+          ViewerCertificate:
+            AcmCertificateArn: ${self:custom.env.certificateArn}
+            SslSupportMethod: 'sni-only'
+          ## Uncomment the following section in case you want to enable logging for CloudFront requests
+          # Logging:
+          #   IncludeCookies: 'false'
+          #   Bucket: mylogs.s3.amazonaws.com
+          #   Prefix: myprefix
+
+  ## In order to print out the hosted domain via `serverless info` we need to define the DomainName output for CloudFormation
+  Outputs:
+    CloudFrontDistributionId:
+      Value:
+        Ref: DocsCloudFrontDistribution
