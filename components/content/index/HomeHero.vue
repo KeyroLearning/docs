@@ -9,7 +9,7 @@
           <ContentSlot :use="$slots.description" />
         </div>
         <div>
-          <nuxt-link to="/about">
+          <nuxt-link to="/demonstrations">
             <Button class="bg-primary text-ultra-light-grey text-base">
               Démonstration
             </Button>
