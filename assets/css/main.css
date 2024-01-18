@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* @layer components {
+    ul {
+        @apply list-disc ml-6;
+    }
+
+    ol {
+        @apply list-decimal;
+    }
+} */
+
+
+@layer components {
+    .container {
+        @apply px-8 md:px-6 lg:px-12 xl:max-w-[1156px];
+    }
+}
+
+@layer components {
+    .heading-1 {
+        @apply text-[30px] leading-[36px] lg:text-[52px] lg:leading-[62px] font-light;
+    }
+
+    .heading-2 {
+        @apply text-[28px] leading-[34px] lg:text-[36px] lg:leading-[43px] font-light;
+    }
+
+    .heading-3 {
+        @apply text-[30px] leading-[36px] lg:text-[32px] lg:leading-[38px] font-light;
+    } 
+
+    .heading-4 {
+        @apply text-[20px] leading-[31px] font-semibold;
+    }
+
+    .heading-5 {
+        @apply text-[16px] leading-[31px] font-semibold;
+    }
+
+    .heading-6 {
+        @apply text-[18px] leading-[22px] font-semibold;
+    }
+
+    .heading-7 {
+        @apply text-[14px] leading-[22px] font-semibold;
+    }
+
+    .paragraph-1 {
+        @apply font-normal text-[16px] leading-[25px];
+    }
+
+    .paragraph-2 {
+        @apply font-normal text-[14px] leading-[25px];
+    }
+
+    .paragraph-3 {
+        @apply font-normal text-[12px] leading-[14px];
+    }
+
+    .label-1 {
+        @apply font-medium text-[14px] leading-[17px] tracking-[.125em];
+    }
+
+    .label-2 {
+        @apply font-medium text-[12px] leading-[14px] tracking-[.125em];
+    }
+}
+
+section ul {
+    @apply list-disc ml-6
+}
+
+
+.hover-underline-animation {
+    position: relative;
+  }
+  
+  .hover-underline-animation::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    transform: scaleX(0);
+    height: 2px;
+    bottom: -3px;
+    left: 0;
+    background-color: currentColor;
+    transform-origin: bottom right;
+    transition: transform 0.25s ease-out;
+  }
+  
+  .hover-underline-animation:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+  }
