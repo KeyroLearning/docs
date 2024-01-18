@@ -110,7 +110,7 @@ Pilotez le développement de votre Organisme de Formation :
 ![](/images/operational.webp)
 ::
 
-::home-button{to="/demonstrations"}
+::home-button{to="/about"}
 Demander une démonstration
 ::
 

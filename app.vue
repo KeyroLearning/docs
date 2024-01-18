@@ -33,7 +33,7 @@ useSeoMeta({
 <template>
   <div class="min-h-screen flex flex-col justify-between overflow-hidden">
     <nuxt-page />
-    <layout-footer class="relative" />
+    <!-- <layout-footer class="relative" /> -->
     <!-- <cookie-monster /> -->
   </div>
 </template>
